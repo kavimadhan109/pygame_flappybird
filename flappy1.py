@@ -5,8 +5,8 @@ black=(0,0,0)
 red=(255,0,0)
 green=(0,255,0)
 blue=(0,0,255)
-dw=600
-dh=476
+dw=700
+dh=500
 screen=pygame.display.set_mode([dw,dh])
 pygame.display.set_caption('Flappy Bird')
 pimg=[pygame.image.load(str(i)+'bg.png') for i in range(1,5)]
@@ -29,11 +29,11 @@ class Bird(pygame.sprite.Sprite):
       self.pos=vec(self.rect.center)
       self.fc=0
    def update(self):
-      self.acc=vec(0,1.5)
+      self.acc=vec(0,2.5)
       self.vel=vec(0,0)
       keys=pygame.key.get_pressed()
       if keys[pygame.K_SPACE]:
-         self.acc.y=-1.5
+         self.acc.y=-2
          if self.fc+1<28:
             self.fc+=1
             self.image=pimg[self.fc//7]
@@ -45,10 +45,10 @@ class Bird(pygame.sprite.Sprite):
          self.image=pygame.transform.scale(self.image,(100,85))
       self.vel+=self.acc
       self.pos+=self.vel+0.5*self.acc
-      if self.pos.y<=0+self.rect.width/2:
-         self.pos.y=0+self.rect.width/2
-      if self.pos.y>=dh-self.rect.width/2:
-         self.pos.y=dh-self.rect.width/2
+      if self.pos.y<=0+self.rect.width/4:
+         self.pos.y=0+self.rect.width/4
+      if self.pos.y>=dh-self.rect.width/4:
+         self.pos.y=dh-self.rect.width/4
       self.rect.center=self.pos
       self.mask=pygame.mask.from_surface(self.image)
 class TBlock(pygame.sprite.Sprite):
@@ -59,7 +59,7 @@ class TBlock(pygame.sprite.Sprite):
       self.rect=self.image.get_rect()
       self.rect.x,self.rect.y=x,0
    def update(self):
-      self.rect.x-=2
+      self.rect.x-=2.5
       self.mask1=pygame.mask.from_surface(self.image)
 class BBlock(pygame.sprite.Sprite):
    def __init__(self,x,h2):
@@ -69,7 +69,7 @@ class BBlock(pygame.sprite.Sprite):
       self.rect=self.image.get_rect()
       self.rect.x,self.rect.y=x,dh-self.rect.height
    def update(self):
-      self.rect.x-=2
+      self.rect.x-=4
       self.mask2=pygame.mask.from_surface(self.image)
 class Game:
    def __init__(self):
@@ -81,7 +81,7 @@ class Game:
       self.gover=0
       self.last=pygame.time.get_ticks()
    def blockgen(self):
-      x=random.randint(620,650)
+      x=random.randint(600,650)
       h=random.choice(blist)
       h1=h[0]
       h2=h[1]
@@ -107,12 +107,12 @@ class Game:
       self.all_sprites.add(self.bblock)
       self.score=0
       self.gover=0
-   def msg(self,text,x,y,color,size):
-      self.font=pygame.font.SysFont('georgia',size,bold=1)
+   def msg(self,text,x,y,color,size):  
+      self.font=pygame.font.SysFont('Castellar',size,bold=0)
       msgtxt=self.font.render(text,1,color)
       msgrect=msgtxt.get_rect()
-      msgrect.center=x/2,y/2
-      screen.blit(msgtxt,(msgrect.center))
+      msgrect.center=x/8,y/8
+      screen.blit(msgtxt,(msgrect.center))  
    def pause(self):
       wait=1
       while wait:
@@ -136,7 +136,7 @@ class Game:
             if event.type==pygame.KEYDOWN:
                if event.key==pygame.K_RETURN:
                   wait=0
-         self.msg("Gameover",dw-150,dh-100,red,40)
+         self.msg("Gameover",dw-150,dh-100,black,40)
          self.msg("Press Enter to Play Again",dw-545,dh+200,red,40)
          pygame.display.flip()
       self.new()
@@ -151,14 +151,14 @@ class Game:
      if hits1 or hits2:
         self.over()       
      relx=self.bgx%bw+5
-     screen.blit(bg,(relx-bw+3,0))
+     screen.blit(bg,(relx-bw+4,0))
      if relx<dw:
         screen.blit(bg,(relx,0))
      self.bgx-=2
      if self.bblock.rect.x<dw/2 and self.tblock.rect.x<dw/2:
         self.blockgen()
         self.score+=1
-     if now-self.last>1500:
+     if now-self.last>3000:
          self.last=now
          self.score+=1
      else:
@@ -169,7 +169,7 @@ class Game:
       self.scores()
    def event(self):
       for event in pygame.event.get():
-         clock.tick(60)
+         clock.tick(150)
          if event.type==pygame.QUIT:
             pygame.quit()
             quit()
